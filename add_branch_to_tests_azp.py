@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
+import os
 import sys
 
 from copy import copy
+from shutil import copyfile
 
 try:
     f = open(sys.argv[1], 'r')
@@ -11,6 +13,10 @@ except Exception:
     sys.exit(1)
 
 HEADERS_TO_HANDLE = ('Ansible_devel', 'Docker_devel', 'Remote_devel')
+ignore_txt_to_copy = None
+
+if len(sys.argv) == 3:
+    ignore_txt_to_copy = sys.argv[2]
 
 for header in HEADERS_TO_HANDLE:
     f = open(sys.argv[1], 'r')
@@ -62,3 +68,16 @@ for header in HEADERS_TO_HANDLE:
     insert_pos = None
     file_content = []
     new_block = []
+
+# Handle ignore.txt if needed
+if ignore_txt_to_copy is not None:
+    if not os.path.exists(ignore_txt_to_copy):
+        print('%s does not exist' % ignore_txt_to_copy)
+        sys.exit(1)
+else:
+    sys.exit(0)
+
+ignore_txt_dst = ignore_txt_to_copy.replace('2.11', '2.12')
+copyfile(ignore_txt_to_copy, ignore_txt_dst)
+
+sys.exit(0)
